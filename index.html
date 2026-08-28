@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Elisa &amp; Alberto — 19.09.2026</title>
+<meta name="description" content="Condividi le tue foto e i tuoi messaggi per Elisa e Alberto">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<svg class="wave-line" viewBox="0 0 400 40" preserveAspectRatio="none"><path d="M0,20 C60,5 100,35 160,20 C220,5 260,35 320,20 C350,12 370,28 400,20" fill="none" stroke-width="1"/></svg>
+
+<main class="wrap" style="position:relative;">
+
+  <svg class="ginkgo-bg top-right" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    <g fill="none" stroke="#B88D5F" stroke-width="1.4">
+      <path d="M100 190 L100 40"/>
+      <path d="M100 60 C60 40 40 0 40 0 C40 40 70 60 100 70"/>
+      <path d="M100 70 C140 50 160 10 160 10 C160 50 130 70 100 80"/>
+      <path d="M100 90 C55 75 30 30 30 30 C30 75 65 95 100 100"/>
+      <path d="M100 100 C145 85 170 40 170 40 C170 85 135 105 100 110"/>
+    </g>
+  </svg>
+
+  <nav class="top-nav">
+    <a href="index.html" class="active">Condividi</a>
+    <a href="gallery.html">Galleria</a>
+  </nav>
+
+  <section class="hero">
+    <p class="eyebrow">Ci sposiamo</p>
+    <h1>Elisa <span class="amp">&amp;</span> Alberto</h1>
+    <p class="date">19 · 09 · 2026</p>
+
+    <svg class="knot" viewBox="0 0 120 90" xmlns="http://www.w3.org/2000/svg">
+      <path d="M60 45
+        C 40 20, 15 20, 15 45
+        C 15 68, 40 68, 50 50
+        C 60 32, 85 22, 95 40
+        C 105 58, 80 70, 60 45
+        M 15 45 C 5 45, 2 55, 8 62
+        M 95 40 C 108 35, 115 45, 110 55"/>
+    </svg>
+
+    <p class="message">Il giorno più bello si racconta meglio con i vostri occhi.
+      Carica una foto, un video o registraci un pensiero a voce: raccoglieremo
+      tutto qui come ricordo della nostra giornata.</p>
+  </section>
+
+  <div class="divider"><span class="line"></span><svg class="knot small" viewBox="0 0 40 40"><path d="M20 30 C10 20 5 8 15 8 C22 8 22 18 15 22 C8 26 8 15 15 12" fill="none"/></svg><span class="line right"></span></div>
+
+  <section class="card">
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="media" type="button">Foto &amp; Video</button>
+      <button class="tab-btn" data-tab="audio" type="button">Messaggio vocale</button>
+    </div>
+
+    <!-- PANNELLO FOTO/VIDEO -->
+    <div class="panel active" id="panel-media">
+      <label class="dropzone" id="dropzone">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 16.5V19a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2.5M7 9l5-5 5 5M12 4v13"/></svg>
+        <p>Tocca per scegliere o trascina qui i file</p>
+        <p class="hint">Foto o video, anche più di uno</p>
+        <input type="file" id="fileInput" accept="image/*,video/*" multiple capture="environment">
+      </label>
+      <div class="preview-list" id="previewList"></div>
+    </div>
+
+    <!-- PANNELLO AUDIO -->
+    <div class="panel" id="panel-audio">
+      <div class="recorder">
+        <button class="rec-btn" id="recBtn" type="button" aria-label="Registra messaggio">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v5a3 3 0 0 0 3 3z"/><path d="M19 11a7 7 0 0 1-14 0H3a9 9 0 0 0 8 8.94V22h2v-2.06A9 9 0 0 0 21 11h-2z"/></svg>
+        </button>
+        <div class="rec-timer" id="recTimer">00:00</div>
+        <p class="rec-hint" id="recHint">Tocca per iniziare a registrare</p>
+        <div class="rec-preview" id="recPreview" style="display:none;">
+          <audio id="recAudio" controls></audio>
+          <button class="rec-redo" id="recRedo" type="button">Registra di nuovo</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="guestName">Il tuo nome (facoltativo)</label>
+      <input type="text" id="guestName" placeholder="Chi ci scrive?">
+    </div>
+    <div class="field">
+      <label for="guestMessage">Un pensiero per gli sposi (facoltativo)</label>
+      <textarea id="guestMessage" placeholder="Scrivi qui il tuo augurio..."></textarea>
+    </div>
+
+    <button class="submit-btn" id="submitBtn" type="button">Invia con amore</button>
+    <p class="status-msg" id="statusMsg"></p>
+
+    <div class="confirmation" id="confirmation" style="display:none;">
+      <svg class="knot small" viewBox="0 0 40 40" style="margin-bottom:14px;"><path d="M20 30 C10 20 5 8 15 8 C22 8 22 18 15 22 C8 26 8 15 15 12" fill="none"/></svg>
+      <p>Grazie di cuore! Il tuo ricordo è stato salvato.</p>
+      <button id="uploadAnother" type="button">Carica un altro ricordo</button>
+    </div>
+  </section>
+
+  <svg class="ginkgo-bg bottom-left" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    <g fill="none" stroke="#24357D" stroke-width="1.4">
+      <path d="M100 190 L100 40"/>
+      <path d="M100 60 C60 40 40 0 40 0 C40 40 70 60 100 70"/>
+      <path d="M100 70 C140 50 160 10 160 10 C160 50 130 70 100 80"/>
+    </g>
+  </svg>
+</main>
+
+<footer>
+  <svg class="knot small" viewBox="0 0 40 40" style="margin-bottom:8px;"><path d="M20 30 C10 20 5 8 15 8 C22 8 22 18 15 22 C8 26 8 15 15 12" fill="none"/></svg>
+  <div>Elisa &amp; Alberto · 19 Settembre 2026</div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/config.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

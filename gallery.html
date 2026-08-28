@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Galleria — Elisa &amp; Alberto</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<svg class="wave-line" viewBox="0 0 400 40" preserveAspectRatio="none"><path d="M0,20 C60,5 100,35 160,20 C220,5 260,35 320,20 C350,12 370,28 400,20" fill="none" stroke-width="1"/></svg>
+
+<nav class="top-nav">
+  <a href="index.html">Condividi</a>
+  <a href="gallery.html" class="active">Galleria</a>
+</nav>
+
+<header class="gallery-header">
+  <svg class="knot small" viewBox="0 0 40 40"><path d="M20 30 C10 20 5 8 15 8 C22 8 22 18 15 22 C8 26 8 15 15 12" fill="none"/></svg>
+  <h2>I ricordi della giornata</h2>
+  <p>Aggiornata in tempo reale</p>
+</header>
+
+<div class="masonry" id="masonry">
+  <p class="gallery-empty">Ancora nessun ricordo... sii il primo a condividerne uno!</p>
+</div>
+
+<footer>
+  <div>Elisa &amp; Alberto · 19 Settembre 2026</div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/config.js"></script>
+<script src="js/gallery.js"></script>
+</body>
+</html>
