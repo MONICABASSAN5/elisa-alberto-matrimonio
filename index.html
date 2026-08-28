@@ -30,7 +30,11 @@
 
   <section class="hero">
     <p class="eyebrow">Ci sposiamo</p>
-    <h1>Elisa <span class="amp">&amp;</span> Alberto</h1>
+    <h1>
+      <span class="name">Elisa</span>
+      <span class="amp">&amp;</span>
+      <span class="name">Alberto</span>
+    </h1>
     <p class="date">19 · 09 · 2026</p>
 
     <svg class="knot" viewBox="0 0 120 90" xmlns="http://www.w3.org/2000/svg">
@@ -43,26 +47,30 @@
         M 95 40 C 108 35, 115 45, 110 55"/>
     </svg>
 
-    <p class="message">Il giorno più bello si racconta meglio con i vostri occhi.
-      Carica una foto, un video o registraci un pensiero a voce: raccoglieremo
-      tutto qui come ricordo della nostra giornata.</p>
+    <p class="message">Il nostro giorno più bello lo custodiremo attraverso i vostri occhi.
+      Lasciateci uno scatto o una voce: raccoglieremo qui ogni ricordo, per
+      riviverlo insieme a voi ancora e ancora.</p>
   </section>
 
   <div class="divider"><span class="line"></span><svg class="knot small" viewBox="0 0 40 40"><path d="M20 30 C10 20 5 8 15 8 C22 8 22 18 15 22 C8 26 8 15 15 12" fill="none"/></svg><span class="line right"></span></div>
 
   <section class="card">
     <div class="tabs">
-      <button class="tab-btn active" data-tab="media" type="button">Foto &amp; Video</button>
+      <button class="tab-btn active" data-tab="media" type="button">Foto</button>
       <button class="tab-btn" data-tab="audio" type="button">Messaggio vocale</button>
     </div>
 
     <!-- PANNELLO FOTO/VIDEO -->
     <div class="panel active" id="panel-media">
+      <div class="roll-counter" id="rollCounter">
+        <svg class="roll-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="6" width="20" height="12" rx="1.5"/><circle cx="6.5" cy="9" r="0.6" fill="currentColor"/><circle cx="6.5" cy="15" r="0.6" fill="currentColor"/><circle cx="17.5" cy="9" r="0.6" fill="currentColor"/><circle cx="17.5" cy="15" r="0.6" fill="currentColor"/></svg>
+        <span id="rollText">Il tuo rullino: 20 scatti rimasti</span>
+      </div>
       <label class="dropzone" id="dropzone">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 16.5V19a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2.5M7 9l5-5 5 5M12 4v13"/></svg>
-        <p>Tocca per scegliere o trascina qui i file</p>
-        <p class="hint">Foto o video, anche più di uno</p>
-        <input type="file" id="fileInput" accept="image/*,video/*" multiple capture="environment">
+        <span class="icon-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 16.5V19a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2.5M7 9l5-5 5 5M12 4v13"/></svg></span>
+        <p>Tocca per scegliere o trascina qui le foto</p>
+        <p class="hint">Puoi selezionarne anche più di una</p>
+        <input type="file" id="fileInput" accept="image/*" multiple capture="environment">
       </label>
       <div class="preview-list" id="previewList"></div>
     </div>
