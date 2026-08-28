@@ -15,11 +15,51 @@
     });
   });
 
+  // ---------- RULLINO FOTOGRAFICO (limite 20 scatti a invitato) ----------
+  const ROLL_LIMIT = 20;
+  const ROLL_KEY = 'ea_rullino_count';
+  const rollCounter = document.getElementById('rollCounter');
+  const rollText = document.getElementById('rollText');
+
+  function getRollUsed() {
+    return parseInt(localStorage.getItem(ROLL_KEY) || '0', 10);
+  }
+  function getRollRemaining() {
+    return Math.max(0, ROLL_LIMIT - getRollUsed());
+  }
+  function addToRoll(count) {
+    const next = Math.min(ROLL_LIMIT, getRollUsed() + count);
+    localStorage.setItem(ROLL_KEY, String(next));
+    renderRollCounter();
+  }
+  function renderRollCounter() {
+    const remaining = getRollRemaining();
+    if (remaining <= 0) {
+      rollText.textContent = 'Il tuo rullino è esaurito: grazie per gli scatti che ci hai regalato!';
+      rollCounter.classList.add('empty');
+      dropzone.classList.add('drag-over');
+      dropzone.style.pointerEvents = 'none';
+      dropzone.style.opacity = '.5';
+      fileInput.disabled = true;
+    } else {
+      rollText.textContent = remaining === 1
+        ? 'Il tuo rullino: 1 scatto rimasto'
+        : `Il tuo rullino: ${remaining} scatti rimasti`;
+      rollCounter.classList.remove('empty');
+      dropzone.classList.remove('drag-over');
+      dropzone.style.pointerEvents = '';
+      dropzone.style.opacity = '';
+      fileInput.disabled = false;
+    }
+  }
+
   // ---------- FOTO / VIDEO ----------
   const dropzone = document.getElementById('dropzone');
   const fileInput = document.getElementById('fileInput');
   const previewList = document.getElementById('previewList');
   let selectedFiles = [];
+
+  renderRollCounter();
 
   function renderPreviews() {
     previewList.innerHTML = '';
@@ -27,11 +67,7 @@
       const item = document.createElement('div');
       item.className = 'preview-item';
       const url = URL.createObjectURL(file);
-      if (file.type.startsWith('video')) {
-        item.innerHTML = `<video src="${url}" muted></video>`;
-      } else {
-        item.innerHTML = `<img src="${url}" alt="">`;
-      }
+      item.innerHTML = `<img src="${url}" alt="">`;
       const removeBtn = document.createElement('button');
       removeBtn.className = 'remove';
       removeBtn.textContent = '✕';
@@ -44,21 +80,35 @@
     });
   }
 
-  fileInput.addEventListener('change', (e) => {
-    selectedFiles = selectedFiles.concat(Array.from(e.target.files));
+  function addFilesRespectingRoll(files) {
+    const remaining = getRollRemaining() - selectedFiles.length;
+    if (remaining <= 0) {
+      statusMsg.textContent = 'Hai già raggiunto i 20 scatti del tuo rullino per questo matrimonio!';
+      statusMsg.classList.add('error');
+      return;
+    }
+    const accepted = files.slice(0, remaining);
+    if (files.length > accepted.length) {
+      statusMsg.textContent = `Ne ho aggiunti solo ${accepted.length}: il tuo rullino da 20 scatti si esaurirebbe altrimenti.`;
+      statusMsg.classList.add('error');
+    }
+    selectedFiles = selectedFiles.concat(accepted);
     renderPreviews();
+  }
+
+  fileInput.addEventListener('change', (e) => {
+    addFilesRespectingRoll(Array.from(e.target.files));
   });
 
   ['dragover', 'dragenter'].forEach(evt =>
-    dropzone.addEventListener(evt, (e) => { e.preventDefault(); dropzone.classList.add('drag-over'); })
+    dropzone.addEventListener(evt, (e) => { e.preventDefault(); if (getRollRemaining() > 0) dropzone.classList.add('drag-over'); })
   );
   ['dragleave', 'drop'].forEach(evt =>
-    dropzone.addEventListener(evt, (e) => { e.preventDefault(); dropzone.classList.remove('drag-over'); })
+    dropzone.addEventListener(evt, (e) => { e.preventDefault(); if (getRollRemaining() > 0) dropzone.classList.remove('drag-over'); })
   );
   dropzone.addEventListener('drop', (e) => {
-    const files = Array.from(e.dataTransfer.files || []);
-    selectedFiles = selectedFiles.concat(files);
-    renderPreviews();
+    if (getRollRemaining() <= 0) return;
+    addFilesRespectingRoll(Array.from(e.dataTransfer.files || []));
   });
 
   // ---------- REGISTRAZIONE AUDIO ----------
@@ -69,22 +119,38 @@
   const recAudio = document.getElementById('recAudio');
   const recRedo = document.getElementById('recRedo');
 
-  let mediaRecorder, audioChunks = [], recordedBlob = null, timerInterval, seconds = 0;
+  let mediaRecorder, audioChunks = [], recordedBlob = null, recordedMimeType = '', timerInterval, seconds = 0;
+
+  function pickSupportedMimeType() {
+    const candidates = ['audio/mp4', 'audio/webm;codecs=opus', 'audio/webm', 'audio/aac', 'audio/ogg'];
+    if (typeof MediaRecorder === 'undefined' || !MediaRecorder.isTypeSupported) return '';
+    return candidates.find(type => MediaRecorder.isTypeSupported(type)) || '';
+  }
 
   recBtn.addEventListener('click', async () => {
     if (mediaRecorder && mediaRecorder.state === 'recording') {
       mediaRecorder.stop();
       return;
     }
+    if (typeof MediaRecorder === 'undefined') {
+      recHint.textContent = 'Il tuo browser non supporta la registrazione audio. Prova ad aggiornarlo o usa Safari/Chrome aggiornati.';
+      return;
+    }
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       audioChunks = [];
-      mediaRecorder = new MediaRecorder(stream);
-      mediaRecorder.ondataavailable = (e) => audioChunks.push(e.data);
+      const mimeType = pickSupportedMimeType();
+      try {
+        mediaRecorder = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
+      } catch (e) {
+        mediaRecorder = new MediaRecorder(stream);
+      }
+      recordedMimeType = mediaRecorder.mimeType || mimeType || 'audio/webm';
+      mediaRecorder.ondataavailable = (e) => { if (e.data && e.data.size > 0) audioChunks.push(e.data); };
       mediaRecorder.onstop = () => {
         clearInterval(timerInterval);
         recBtn.classList.remove('recording');
-        recordedBlob = new Blob(audioChunks, { type: 'audio/webm' });
+        recordedBlob = new Blob(audioChunks, { type: recordedMimeType });
         recAudio.src = URL.createObjectURL(recordedBlob);
         recPreview.style.display = 'block';
         recHint.textContent = 'Ascolta l\'anteprima qui sotto';
@@ -102,7 +168,8 @@
         recTimer.textContent = `${m}:${s}`;
       }, 1000);
     } catch (err) {
-      recHint.textContent = 'Impossibile accedere al microfono. Controlla i permessi del browser.';
+      recHint.textContent = 'Impossibile accedere al microfono. Controlla di aver dato il permesso al browser.';
+      console.error(err);
     }
   });
 
@@ -156,7 +223,7 @@
 
     if (!hasMedia && !hasAudio) {
       statusMsg.textContent = activeTab === 'media'
-        ? 'Scegli almeno una foto o un video prima di inviare.'
+        ? 'Scegli almeno una foto prima di inviare.'
         : 'Registra un messaggio prima di inviare.';
       statusMsg.classList.add('error');
       return;
@@ -168,12 +235,16 @@
     try {
       if (hasMedia) {
         for (const file of selectedFiles) {
-          const type = file.type.startsWith('video') ? 'video' : 'photo';
-          const path = await uploadFile(file, type);
-          await insertRecord(type, path);
+          const path = await uploadFile(file, 'photo');
+          await insertRecord('photo', path);
         }
+        addToRoll(selectedFiles.length);
       } else if (hasAudio) {
-        const audioFile = new File([recordedBlob], 'messaggio.webm', { type: 'audio/webm' });
+        const ext = recordedMimeType.includes('mp4') ? 'm4a'
+          : recordedMimeType.includes('ogg') ? 'ogg'
+          : recordedMimeType.includes('aac') ? 'aac'
+          : 'webm';
+        const audioFile = new File([recordedBlob], `messaggio.${ext}`, { type: recordedMimeType });
         const path = await uploadFile(audioFile, 'audio');
         await insertRecord('audio', path);
       }
@@ -208,5 +279,6 @@
     tabBtns.forEach(b => b.classList.remove('active'));
     tabBtns[0].classList.add('active');
     activeTab = 'media';
+    renderRollCounter();
   });
 })();
